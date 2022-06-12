@@ -4,9 +4,10 @@ defmodule SpaceCenter do
   def fuel_required(mass, _launch_gravity) when mass <= 0, do: nil
 
   def fuel_required(mass, directives) when mass > 0 do
-    Enum.map(directives, fn directive ->
-      launch_gravity = if elem(directive, 0) == :launch, do: elem(directive, 1), else: 0
-      land_gravity = if elem(directive, 0) == :land, do: elem(directive, 1), else: 0
+    fuel_required = Enum.map(directives, fn directive ->
+      route = elem(directive, 0)
+      launch_gravity = if route == :launch, do: elem(directive, 1), else: 0
+      land_gravity = if route == :land, do: elem(directive, 1), else: 0
 
       fuel_for_launch = if launch_gravity > 0, do:
                           round(mass * launch_gravity * 0.042 - 33), else: 0
@@ -20,8 +21,11 @@ defmodule SpaceCenter do
       total_land_fuel = if fuel_for_land > 0, do:
       calculate_land_fuel(fuel_for_land, land_gravity)
 
-      if total_launch_fuel, do: total_launch_fuel, else: total_land_fuel
+      if total_launch_fuel, do: {route, total_launch_fuel}, else: {route, total_land_fuel}
     end)
+
+    IO.puts("Total fuel required for each trip")
+    IO.inspect(fuel_required)
   end
 
   defp calculate_launch_fuel(fuel_for_launch, launch_gravity) do
