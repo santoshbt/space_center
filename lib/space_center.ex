@@ -1,7 +1,7 @@
 defmodule SpaceCenter do
   @moduledoc false
 
-  def fuel_required(mass, _launch_gravity) when mass <= 0, do: nil
+  def fuel_required(mass, _directives) when mass <= 0, do: nil
 
   def fuel_required(mass, directives) when mass > 0 do
     fuel_required = Enum.map(directives, fn directive ->
